@@ -17,6 +17,12 @@ class UserService:
     def get_users(self):
         return self.user_repo.get_users()
     
+    def get_user_by_name(self, user_name:str):
+        return self.user_repo.get_user_by_username(user_name=user_name)
+    
+    def get_user_by_email(self, email:str):
+        return self.user_repo.get_user_by_email(email=email)
+
     # service method to create a user
     def create_user(self, user_create: UserCreate):
         # check whether the user already exists
@@ -29,9 +35,9 @@ class UserService:
         return self.user_repo.create_user(user_create)
     
     # define a function to authenticate the user
-    def authenticate_user(self, username: str, password: str):
+    def authenticate_user(self, user_name: str, password: str):
         
-        user = self.user_repo.get_user_by_username(username)
+        user = self.user_repo.get_user_by_username(user_name)
 
         if not user or not verify_password(password, user.hashed_password):
             return False
@@ -39,9 +45,9 @@ class UserService:
         return user
     
     # define the login process
-    def login_for_access_token(self, username: str, password: str):
+    def login_for_access_token(self, user_name: str, password: str):
 
-        user = self.authenticate_user(username, password)
+        user = self.authenticate_user(user_name, password)
 
         if not user:
             raise HTTPException(

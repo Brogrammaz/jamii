@@ -16,6 +16,10 @@ router = APIRouter()
 def get_users(db: Session = Depends(get_db)):
     return UserService(db).get_users()
 
+@router.get("/users/{email}")
+def get_user_by_memail(email:str, db:Session = Depends(get_db)):
+    return UserService(db).get_user_by_email(email)
+
 @router.post("/token")
 def get_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db_session = Depends(get_db)):
     return UserService(db_session).login_for_access_token(
@@ -23,7 +27,7 @@ def get_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db_sessio
         form_data.password
     )
 
-@router.post("/user", response_model=UserResponse)
+@router.post("/users", response_model=UserResponse)
 def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
     user_service = UserService(db)
     db_user = user_service.create_user(user)

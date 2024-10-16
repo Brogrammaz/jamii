@@ -21,8 +21,8 @@ class UserRepository:
     
 
     # get user by username
-    def get_user_by_username(self, username: str) -> User:
-        return self.db.query(User).filter(User.name == username).first()
+    def get_user_by_username(self, user_name: str) -> User:
+        return self.db.query(User).filter(User.name == user_name).first()
 
     # create use and commit to the db.
     def create_user(self, user:UserCreate):

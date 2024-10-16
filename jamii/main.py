@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .api.routes import user
+from jamii.api.routes import user, deposits
 from loguru import logger
 
 
@@ -10,6 +10,8 @@ logger.add("jamii.log", rotation="1 MB")
 app = FastAPI()
 
 app.include_router(user.router)
+
+app.include_router(deposits.router, prefix="/api")
 
 
 # Basic root endpoint
