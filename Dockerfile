@@ -14,7 +14,7 @@ ENV \
         POETRY_VERSION=1.8.2
 
 # install poetry
-RUN pip install "poetry==${POETRY_VERSION}"
+RUN pip install --no-cache-dir pydantic-settings==2.6.0 fastapi "poetry==${POETRY_VERSION}"
 
 # set the working directory
 WORKDIR $WORKDIR
