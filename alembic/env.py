@@ -10,6 +10,7 @@ from alembic import context
 from jamii.db.session import Base
 from jamii.core.config import settings
 from jamii.db.models.user import User
+from jamii.db.models.deposit import Deposit
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

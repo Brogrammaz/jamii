@@ -3,7 +3,7 @@ from datetime import datetime
 
 class DepositBase(BaseModel):
     amount: float
-    member_id: int
+    user_id: int
 
 
 class DepositCreate(DepositBase):
