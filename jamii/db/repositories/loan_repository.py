@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from fastapi import HTTPException
 from jamii.db.models.loan import LoanRequest  # Assuming your LoanRequest model is here
-from jamii.db.schemas.loan import LoanCreate  # Assuming your LoanCreate schema is here
+from jamii.db.schemas.loan import LoanRequestCreate
 
 class LoanRepository:
     def __init__(self, db: Session):
@@ -22,9 +22,9 @@ class LoanRepository:
         return self.db.query(LoanRequest).filter(LoanRequest.employee_id == employee_id).all()
 
     # Create a new loan request
-    def create_loan(self, loan: LoanCreate):
+    def create_loan(self, loan: LoanRequestCreate):
         db_loan = LoanRequest(
-            employee_id=loan.employee_id,
+            user_id=loan.user_id,
             loan_amount=loan.loan_amount,
             loan_type=loan.loan_type,
             interest_rate=loan.interest_rate,

@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.sql import func
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from sqlalchemy.orm import relationship
+from jamii.db.session import Base
 
 class LoanRequest(Base):
     __tablename__ = 'loan_requests'
@@ -21,4 +20,6 @@ class LoanRequest(Base):
     
     # Approval and status tracking
     approver_name = Column(String(80), nullable=True)
-    status = Column(String(20), default='Pending')  # Pending, Approved, Rejected, Disbursed
+    status = Column(String(20), default='Pending')  # Pending, Approved, Rejected, Disbursed, Repaid
+
+    user = relationship("User", back_populates="loan")
