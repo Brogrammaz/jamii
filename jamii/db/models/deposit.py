@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Float, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from jamii.db.session import Base
 from datetime import datetime
