@@ -27,7 +27,7 @@ class UserRepository:
     # create use and commit to the db.
     def create_user(self, user:UserCreate):
 
-        hashed_password = get_password_hash(user.password)
+        hashed_password = get_password_hash(user.hashed_password)
 
         db_user = User(
             name=user.name, 

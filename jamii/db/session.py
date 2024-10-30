@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from jamii.core.config import settings
 
 # create the engine that will connect to the database
-engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

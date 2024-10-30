@@ -3,11 +3,11 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from jamii.db.session import Base
 
-class LoanRequest(Base):
-    __tablename__ = 'loan_requests'
+class Loan(Base):
+    __tablename__ = 'tbl_loans'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey("tbl_users.user_id"), nullable=False)
     loan_amount = Column(Float, nullable=False)
     loan_type = Column(String(100), nullable=False)  # e.g., personal, business, mortgage
     interest_rate = Column(Float, nullable=False)
@@ -22,4 +22,4 @@ class LoanRequest(Base):
     approver_name = Column(String(80), nullable=True)
     status = Column(String(20), default='Pending')  # Pending, Approved, Rejected, Disbursed, Repaid
 
-    user = relationship("User", back_populates="loan")
+    user = relationship("User", back_populates="loans")

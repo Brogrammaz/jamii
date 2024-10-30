@@ -13,4 +13,4 @@ class User(Base):
     hashed_password = Column(String)
 
     deposits = relationship("Deposit", back_populates="user")
-    loan = relationship("loan", back_populates="user")
+    loans = relationship("Loan", back_populates="user")
