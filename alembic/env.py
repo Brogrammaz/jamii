@@ -16,12 +16,12 @@ from jamii.core.config import settings
 from jamii.db.models.user import User
 from jamii.db.models.deposit import Deposit
 
-engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(settings.database_url)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

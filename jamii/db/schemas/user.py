@@ -8,11 +8,10 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr 
     gender: str
-    password: str
+    hashed_password: str
     
 class UserResponse(BaseModel):
 
-    id: int
     name: str
     email: EmailStr
     gender: str
