@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String
 from jamii.db.session import Base
 from sqlalchemy.orm import relationship
-
+from jamii.db import enum
+from jamii.db.enum import UserRole
 
 class User(Base):
     __tablename__ = "tbl_users"
@@ -11,6 +12,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     gender = Column(String, index=True)
     hashed_password = Column(String)
+    role = Column(enum(UserRole), default=UserRole.USER, nullable=False)  # Add the role column
 
     deposits = relationship("Deposit", back_populates="user")
     loans = relationship("Loan", back_populates="user")
