@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jamii.db.schemas.user import UserCreate, UserResponse
 from jamii.db.models import user as user_model
-from jamii.core.security import verify_password, create_access_token, verify_token
+from jamii.core.security import create_access_token, verify_token
 from jamii.api.dependencies.db import get_db
 from jamii.db.enum import UserRole
 router = APIRouter()
@@ -16,11 +16,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not db_user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    # Verify the password
-    if not db_user.check_password(form_data.password):
+    # Verify the password using the hashed password
+    if not db_user.check_hashed_password(form_data.password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    # Create an access token (assuming you have JWT setup)
+    # Create an access token
     access_token = create_access_token(data={"sub": db_user.email, "role": db_user.role.value})
     
     return {"access_token": access_token, "token_type": "bearer"}
@@ -32,22 +32,22 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create a new user instance
+    # Create a new user instance and hash the password
     new_user = user_model.User(
         name=user.name,
         email=user.email,
         gender=user.gender,
         role=user.role
     )
-    # Hash the password
-    new_user.set_password(user.password)
-    
+    new_user.set_hashed_password(user.password)  # Hash and store the password
+
     # Add to the database
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     
     return new_user
+
 
 def get_current_user_role(token: str):
     payload = verify_token(token)
