@@ -12,7 +12,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     gender = Column(String, index=True)
     hashed_password = Column(String)
-    role = Column(enum(UserRole), default=UserRole.USER, nullable=False)  # Add the role column
+    role = Column(String, default=UserRole.USER, nullable=False) 
 
     deposits = relationship("Deposit", back_populates="user")
     loans = relationship("Loan", back_populates="user")

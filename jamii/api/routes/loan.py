@@ -1,17 +1,17 @@
 # jamii/api/routes/loan.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from jamii.db.models.loan import LoanRequest
-from jamii.db.schemas.loan import LoanRequestCreate, LoanRequestResponse
+from jamii.db.models.loan import Loan
+from jamii.db.schemas.loan import LoanCreate, LoanResponse
 from jamii.api.dependencies.db import get_db
 from datetime import datetime
 
 router = APIRouter()
 
 # Create the loan request
-@router.post("/loan_requests/", response_model=LoanRequestResponse)
-def create_loan_request(loan_request: LoanRequestCreate, db: Session = Depends(get_db)):
-    new_loan = LoanRequest(
+@router.post("/loan_requests/", response_model=LoanResponse)
+def create_loan_request(loan_request: LoanCreate, db: Session = Depends(get_db)):
+    new_loan = Loan(
         user_id=loan_request.user_id,
         loan_amount=loan_request.loan_amount,
         loan_type=loan_request.loan_type,
@@ -34,9 +34,9 @@ def create_loan_request(loan_request: LoanRequestCreate, db: Session = Depends(g
     return new_loan
 
 # Get a loan request by ID
-@router.get("/loan_requests/{loan_id}", response_model=LoanRequestResponse)
+@router.get("/loan_requests/{loan_id}", response_model=LoanResponse)
 def get_loan_request(loan_id: int, db: Session = Depends(get_db)):
-    loan_request = db.query(LoanRequest).filter(LoanRequest.id == loan_id).first()
+    loan_request = db.query(Loan).filter(Loan.id == loan_id).first()
     
     if not loan_request:
         raise HTTPException(status_code=404, detail="Loan request not found")
@@ -44,9 +44,9 @@ def get_loan_request(loan_id: int, db: Session = Depends(get_db)):
     return loan_request
 
 # Soft delete a loan request
-@router.delete("/loan_requests/{loan_id}", response_model=LoanRequestResponse)
+@router.delete("/loan_requests/{loan_id}", response_model=LoanResponse)
 def soft_delete_loan_request(loan_id: int, db: Session = Depends(get_db)):
-    loan_request = db.query(LoanRequest).filter(LoanRequest.id == loan_id).first()
+    loan_request = db.query(Loan).filter(Loan.id == loan_id).first()
 
     if not loan_request:
         raise HTTPException(status_code=404, detail="Loan request not found")

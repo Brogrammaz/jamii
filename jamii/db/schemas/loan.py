@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-class LoanRequestCreate(BaseModel):
+class LoanCreate(BaseModel):
     user_id: int
     loan_amount: float
     loan_type: str
@@ -11,7 +11,7 @@ class LoanRequestCreate(BaseModel):
     purpose: Optional[str] = None
     approver_name: Optional[str] = None
 
-class LoanRequestResponse(BaseModel):
+class LoanResponse(BaseModel):
     id: int
     user_id: int
     loan_amount: float
