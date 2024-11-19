@@ -1,59 +1,55 @@
-# jamii/api/routes/loan.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from jamii.db.models.loan import Loan
-from jamii.db.schemas.loan import LoanCreate, LoanResponse
 from jamii.api.dependencies.db import get_db
-from datetime import datetime
+from jamii.services.loan_service import LoanService
+from jamii.db.schemas.loan import LoanCreate
+from loguru import logger
 
 router = APIRouter()
 
-# Create the loan request
-@router.post("/loan_requests/", response_model=LoanResponse)
-def create_loan_request(loan_request: LoanCreate, db: Session = Depends(get_db)):
-    new_loan = Loan(
-        user_id=loan_request.user_id,
-        loan_amount=loan_request.loan_amount,
-        loan_type=loan_request.loan_type,
-        interest_rate=loan_request.interest_rate,
-        repayment_term=loan_request.repayment_term,
-        purpose=loan_request.purpose,
-        application_date=datetime.now(),
-        approver_name=loan_request.approver_name,
-        status="Pending"
-    )
+@router.get("/user-loans")
+def get_user_loans(user_id: int = None, email: str = None, db: Session = Depends(get_db)):
+    """
+    Retrieve the latest loans of a user based on user ID or email.
+    """
+    loan_service = LoanService(db)
+
+    loans = loan_service.get_user_loans(user_id=user_id, email=email)
+
+    if loans is None or not loans:
+        raise HTTPException(status_code=404, detail="User not found or no loans available")
     
-    db.add(new_loan)
+    return loans
+
+
+@router.post("/")
+def create_loan(loan: LoanCreate, db: Session = Depends(get_db)):
+    """
+    Create a new loan request for a user.
+    """
+    loan_service = LoanService(db)
+
     try:
-        db.commit()
-        db.refresh(new_loan)
+        created_loan = loan_service.create_loan(loan)
+        return created_loan
     except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Error creating loan request: " + str(e))
-    
-    return new_loan
+        logger.error(f"Error creating loan: {e}")
+        raise HTTPException(status_code=500, detail="Loan creation failed")
 
-# Get a loan request by ID
-@router.get("/loan_requests/{loan_id}", response_model=LoanResponse)
-def get_loan_request(loan_id: int, db: Session = Depends(get_db)):
-    loan_request = db.query(Loan).filter(Loan.id == loan_id).first()
-    
-    if not loan_request:
-        raise HTTPException(status_code=404, detail="Loan request not found")
-    
-    return loan_request
 
-# Soft delete a loan request
-@router.delete("/loan_requests/{loan_id}", response_model=LoanResponse)
-def soft_delete_loan_request(loan_id: int, db: Session = Depends(get_db)):
-    loan_request = db.query(Loan).filter(Loan.id == loan_id).first()
+@router.delete("/{loan_id}")
+def delete_loan(loan_id: int, db: Session = Depends(get_db)):
+    """
+    Soft delete a loan request by its ID.
+    """
+    loan_service = LoanService(db)
 
-    if not loan_request:
-        raise HTTPException(status_code=404, detail="Loan request not found")
-
-    # Soft delete by updating status
-    loan_request.status = "Deleted"
-    db.commit()
-    db.refresh(loan_request)
-    
-    return loan_request
+    try:
+        result = loan_service.soft_delete_loan(loan_id)
+        return result
+    except HTTPException as e:
+        logger.error(f"Error deleting loan: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unexpected error during loan deletion: {e}")
+        raise HTTPException(status_code=500, detail="Loan deletion failed")

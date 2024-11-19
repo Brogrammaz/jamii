@@ -1,16 +1,16 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from jamii.db.schemas.loan import LoanRequestCreate, LoanRequestResponse
-from jamii.db.models.loan import LoanRequest
+from jamii.db.schemas.loan import LoanCreate, LoanResponse
+from jamii.db.models.loan import Loan
 
 
 class LoanService:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_loan_request(self, loan_request: LoanRequestCreate) -> LoanRequestResponse:
-        # Create a new loan request
-        new_loan = LoanRequest(
+    def create_loan_request(self, loan_request: LoanCreate) -> LoanResponse:
+        # Create a new loan
+        new_loan = Loan(
             user_id=loan_request.user_id,
             loan_amount=loan_request.loan_amount,
             loan_type=loan_request.loan_type,
@@ -28,18 +28,18 @@ class LoanService:
         
         return new_loan
 
-    def get_loan_request(self, loan_id: int) -> LoanRequestResponse:
+    def get_loan_request(self, loan_id: int) -> LoanResponse:
         # Retrieve a loan request by ID
-        loan_request = self.db.query(LoanRequest).filter(LoanRequest.id == loan_id).first()
+        loan_request = self.db.query(Loan).filter(Loan.id == loan_id).first()
         
         if not loan_request:
             raise HTTPException(status_code=404, detail="Loan request not found")
         
         return loan_request
 
-    def update_loan_request(self, loan_id: int, loan_request: LoanRequestCreate) -> LoanRequestResponse:
+    def update_loan_request(self, loan_id: int, loan_request: LoanCreate) -> LoanResponse:
         # Update an existing loan request
-        existing_loan = self.db.query(LoanRequest).filter(LoanRequest.id == loan_id).first()
+        existing_loan = self.db.query(Loan).filter(Loan.id == loan_id).first()
         
         if not existing_loan:
             raise HTTPException(status_code=404, detail="Loan request not found")
@@ -53,12 +53,11 @@ class LoanService:
         
         return existing_loan
 
-    def delete_loan_request(self, loan_id: int) -> None:
-        # Delete a loan request by ID
-        loan_request = self.db.query(LoanRequest).filter(LoanRequest.id == loan_id).first()
-        
-        if not loan_request:
-            raise HTTPException(status_code=404, detail="Loan request not found")
-        
-        self.db.delete(loan_request)
-        self.db.commit()
+    def soft_delete_loan_service(db: Session, loan_id: int) -> LoanResponse:
+        loan = db.query(loan).filter(loan.id == loan_id).first()
+        if not loan:
+         raise HTTPException(status_code=404, detail="Loan not found")
+        loan.status = "Deleted"
+        db.commit()
+        db.refresh(loan)
+        return loan

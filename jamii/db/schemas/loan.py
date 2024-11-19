@@ -9,7 +9,6 @@ class LoanCreate(BaseModel):
     interest_rate: float
     repayment_term: int
     purpose: Optional[str] = None
-    approver_name: Optional[str] = None
 
 class LoanResponse(BaseModel):
     id: int

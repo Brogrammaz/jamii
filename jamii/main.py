@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from jamii.api.routes import user, deposits, loan
+from jamii.api.routes import user, deposits, loan, transaction
 from loguru import logger
 from jamii import auth  # Import the route files
 
@@ -14,7 +14,7 @@ app.include_router(user.router)
 app.include_router(loan.router, prefix="/api")
 app.include_router(deposits.router, prefix="/api")
 app.include_router(auth.router)
-
+app.include_router(transaction.router, prefix="/api")
 # Basic root endpoint
 @app.get("/")
 def read_root():
