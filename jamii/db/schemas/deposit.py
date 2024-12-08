@@ -4,6 +4,8 @@ from datetime import datetime
 class DepositBase(BaseModel):
     amount: float
     user_id: int
+    interest_rate:float
+    interest_type:str
 
 
 class DepositCreate(DepositBase):

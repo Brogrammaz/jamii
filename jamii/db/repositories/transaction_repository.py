@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from datetime import datetime
 from fastapi import HTTPException
 from jamii.db.models.transaction import Transaction  # Assuming your Transaction model is here
 from jamii.db.schemas.transaction import TransactionCreate
+from loguru import logger
 
 class TransactionRepository:
     def __init__(self, db: Session):
@@ -11,17 +12,37 @@ class TransactionRepository:
 
     # Get all transactions
     def get_all_transactions(self):
-        return self.db.query(Transaction).all()
+        try:
+            transactions = self.db.query(Transaction).all()
+            if not transactions:
+                raise HTTPException(status_code=404, detail="No transactions found.")
+            return transactions
+        except SQLAlchemyError as e:
+            logger.error(f"Failed to retrieve all transactions: {e}")
+            raise HTTPException(status_code=500, detail="Database error while retrieving transactions.")
 
     # Get a transaction by ID
     def get_transaction_by_id(self, transaction_id: int) -> Transaction:
-        return self.db.query(Transaction).filter(Transaction.id == transaction_id).first()
+        try:
+            transaction = self.db.query(Transaction).filter(Transaction.id == transaction_id).first()
+            if not transaction:
+                raise HTTPException(status_code=404, detail="Transaction not found.")
+            return transaction
+        except SQLAlchemyError as e:
+            logger.error(f"Failed to retrieve transaction with ID {transaction_id}: {e}")
+            raise HTTPException(status_code=500, detail="Database error while retrieving the transaction.")
 
     # Get transactions by user ID
     def get_transactions_by_user_id(self, user_id: int):
-        return self.db.query(Transaction).filter(Transaction.user_id == user_id).all()
+        try:
+            transactions = self.db.query(Transaction).filter(Transaction.user_id == user_id).all()
+            if not transactions:
+                raise HTTPException(status_code=404, detail=f"No transactions found for user ID {user_id}.")
+            return transactions
+        except SQLAlchemyError as e:
+            logger.error(f"Failed to retrieve transactions for user ID {user_id}: {e}")
+            raise HTTPException(status_code=500, detail="Database error while retrieving user transactions.")
 
-    # Create a new transaction
     def create_transaction(self, transaction: TransactionCreate):
         db_transaction = Transaction(
             user_id=transaction.user_id,

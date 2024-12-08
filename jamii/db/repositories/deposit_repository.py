@@ -46,6 +46,6 @@ class DepositRepository:
 
         except IntegrityError:
             self.db.rollback()
-            return HTTPException(status_code=400, detail="Trransaction id already exists.")
+            return HTTPException(status_code=400, detail="Transaction id already exists.")
         
         return user_deposit

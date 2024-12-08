@@ -3,10 +3,8 @@ from datetime import datetime
 from typing import Optional
 
 class LoanCreate(BaseModel):
-    user_id: int
     loan_amount: float
     loan_type: str
-    interest_rate: float
     repayment_term: int
     purpose: Optional[str] = None
 
@@ -16,6 +14,7 @@ class LoanResponse(BaseModel):
     loan_amount: float
     loan_type: str
     interest_rate: float
+    interest_type:str
     repayment_term: int
     purpose: Optional[str] = None
     application_date: datetime
